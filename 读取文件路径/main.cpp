@@ -13,8 +13,8 @@ void getFiles(string path, vector<string>& files);
 
 int main()
 {
-	ofstream f("E:\\project\\facedata\\orl_faces\\faces.txt", ios::beg);//从头写入文件
-	string filePath = "E:\\project\\facedata\\orl_faces";
+	ofstream f("E:\\project\\facedata\\san\\faces.txt", ios::beg);//从头写入文件
+	string filePath = "E:\\project\\facedata\\san";
 	vector<string> files;
 	getFiles(filePath, files);
 	int number = files.size();//文件数量
@@ -34,11 +34,12 @@ void getFiles(string path, vector<string>& files)
 	intptr_t   hFile = 0;
 	//存储文件各种信息的结构体
 	struct _finddata_t fileinfo;
-	string p,indexTmp;
-	int numEle = 0;
+	string p; 
 	//assign方法可以理解为先将原字符串清空，然后赋予新的值作替换。
 	if ((hFile = _findfirst(p.assign(path).append("\\*").c_str(), &fileinfo)) != -1)
 	{
+		string indexTmp,fileName;
+		int numEle = 0;
 		do
 		{
 			//是否为文件夹
@@ -53,10 +54,16 @@ void getFiles(string path, vector<string>& files)
 			else//非文件夹
 			{
 				//根据当前文件夹名，确定索引
+				//文件夹名去除s后的名字字符数量
 				numEle = p.rfind("\\") - (p.rfind("s") + 1);
 				indexTmp = p.substr((p.rfind("s") + 1), numEle);
-				//分号后添加索引
-				files.push_back(p.assign(path).append("\\").append(fileinfo.name).append(";") + indexTmp);
+				//若不为txt,记录路径
+				fileName = fileinfo.name;
+				if (fileName.rfind(".txt") == fileName.npos)
+				{
+					//分号后添加索引
+					files.push_back(p.assign(path).append("\\").append(fileinfo.name).append(";") + indexTmp);
+				}
 			}
 		} while (_findnext(hFile, &fileinfo) == 0);//文件夹下的文件读取完毕
 		_findclose(hFile);
